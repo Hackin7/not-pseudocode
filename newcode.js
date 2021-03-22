@@ -829,11 +829,14 @@ class ErrorCode():
 
 
 class Error(Exception):
-    def __init__(self, error_code=None, token=None, message=None):
+    def __init__(self, error_code=None, token=None, message="We don't know the issue yet"):
         self.error_code = error_code
         self.token = token
         # add exception class name before the message
+        #self.message = "HELP!!!!!!!!!!!"
         self.message = f'{self.__class__.__name__}: {message}'
+        super().__init__(message)
+
 
 
 class LexerError(Error):
@@ -980,13 +983,11 @@ class SemanticAnalyzer:
     def error(self, error_code, token):
 
         print("ERROR",error_code, token)
-        '''
         raise SemanticError(
             error_code=error_code,
             token=token,
-            message=f'{error_code.value} -> {token}',
+            message=f'{error_code} -> {token}',
         )
-        '''
 
     def visit(self, node=None):
         if node == None:

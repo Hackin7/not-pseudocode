@@ -136,7 +136,7 @@ ENDFOR
             let result = pyodide.globals.get('compile')(code.value);
             output.value = result;
         }catch (e){
-            output.value = e.message;
+            output.value = "ERROR!!!\n"+e.message;
         }
     }
 
@@ -146,7 +146,7 @@ ENDFOR
             let result = pyodide.globals.get('runPseudocode')(code.value);
             output.value = result;
         }catch (e){
-            output.value = e.message;
+            output.value = "ERROR!!!\n"+e.message;
         }
     }
 

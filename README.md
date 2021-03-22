@@ -257,3 +257,14 @@ ELSE
     OUTPUT "Found at position ", Found
 ENDIF
 ```
+
+Semantic Analyser Checks
+ - I'm too lazy to go through everything to see if all the data types line up, so make do with my crappy checks for now
+```
+DECLARE float: FLOT // Invalid Type
+DECLARE float: FLOAT // Double Definition
+
+PROCEDURE yes
+    RETURN "value" //PROCEDURES CANNOT RETURN values
+ENDPROCEDURE
+```
