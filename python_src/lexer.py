@@ -20,26 +20,30 @@ class Lexer(object):
         else:
             self.current_char = self.text[self.pos]
 
-    def peek(self, no):
+    def peek(self, no=1):
         result = ''
         curr = self.pos
         while curr < len(self.text) and (curr - self.pos + 1) <= no:
             result += self.text[curr]
             curr += 1
         return result
-    
+
     def reset(self, pos):
         print("Lexer Reset", self.pos, pos)
         self.pos = pos
         self.current_char = self.text[self.pos]
-        
+
     ### Skip Unnecessary #####################################################
     def skip_whitespace(self):
         while self.current_char is not None and \
             self.current_char.isspace() and \
             self.current_char != '\n':
             self.advance()
-            
+
+    def skip_single_line_comment(self):
+        while self.current_char is not None and self.peek() != "\n":
+            self.advance()
+        self.advance()
     def skip_comments(self):
         while self.current_char is not None and self.peek(2) != "*/":
             self.advance()
@@ -48,7 +52,9 @@ class Lexer(object):
 
     ### Data Types ##########################################################
     def number(self):
-        """Return a (multidigit) number consumed from the input."""
+        """
+        Return a (multidigit) number consumed from the input.
+        """
         result = ''
         while self.current_char is not None and self.current_char.isdigit():
             result += self.current_char
@@ -76,9 +82,9 @@ class Lexer(object):
         # Skip Quote
         self.advance()
         return Token(STRING, result)
-        
 
-    
+
+
     def identifier(self): # Alphanumeric
         result = ''
         while self.current_char is not None and \
@@ -86,7 +92,7 @@ class Lexer(object):
                 result += self.current_char
                 self.advance()
         return reserved_words.get(result, Token(ID, result))
-    
+
     ### Next Token ###########################################################
     def get_next_token(self):
         """
@@ -100,10 +106,13 @@ class Lexer(object):
             if self.current_char.isspace() and self.current_char != '\n':
                 self.skip_whitespace()
                 continue
+            if self.peek(2) == '//':
+                self.skip_single_line_comment()
+                continue
             if self.peek(2) == '/*':
                 self.skip_comments()
                 continue
-                      
+
             if self.current_char.isdigit():
                 return self.number()
             if self.current_char in ["'", '"']:

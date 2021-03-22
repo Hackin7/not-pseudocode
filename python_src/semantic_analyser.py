@@ -2,11 +2,7 @@
 
 from ast import *
 
-from enum import Enum
-
-
-
-class ErrorCode(Enum):
+class ErrorCode():
     UNEXPECTED_TOKEN = 'Unexpected token'
     ID_NOT_FOUND     = 'Identifier not found'
     DUPLICATE_ID     = 'Duplicate id found'
@@ -100,6 +96,7 @@ class ScopedSymbolTable:
         self.insert(BuiltinTypeSymbol('INTEGER'))
         self.insert(BuiltinTypeSymbol('STRING'))
         self.insert(BuiltinTypeSymbol('FLOAT'))
+        self.insert(BuiltinTypeSymbol('REAL'))
         self.insert(BuiltinTypeSymbol('ARRAY'))
 
     def __str__(self):
@@ -157,14 +154,14 @@ class SemanticAnalyzer:
         self.tree = tree
         self.current_scope = None
         self.debug = debug  # see '--scope' command line option
-        
+
 
     def log(self, msg):
         if self.debug:
             print(msg)
 
     def error(self, error_code, token):
-        
+
         print("ERROR",error_code, token)
         '''
         raise SemanticError(
@@ -176,7 +173,7 @@ class SemanticAnalyzer:
 
     def visit(self, node=None):
         if node == None:
-            print('RESET################')
+            #print('RESET################')
             node = self.tree
             self.log('ENTER scope: global')
             global_scope = ScopedSymbolTable(
@@ -188,13 +185,13 @@ class SemanticAnalyzer:
 
             global_scope._init_builtins()
             self.current_scope = global_scope
-            
+
         ### Data and Arithmetic #########################################
         if type(node) == NodeData:
             pass
         elif type(node) == NodeUnaryOp:
             self.visit(node.right)
-            
+
         elif type(node) == NodeBinOp:
             self.visit(node.left)
             # shouldn't need to check node.value? Because tokenised
@@ -203,7 +200,7 @@ class SemanticAnalyzer:
         elif type(node) == NodeStatementList:
             for statement in node.statements:
                 self.visit(statement)
-                
+
         ### Declaration & Assignment ##################################################################################
         elif type(node) == NodeVariableDeclaration:
             type_name = node.given_type.name
@@ -228,11 +225,11 @@ class SemanticAnalyzer:
 
             self.current_scope.insert(var_symbol)
 
-            
+
         elif type(node) == NodeAssignment:
             var_name = self.visit(node.left)
             self.visit(node.right)
-            
+
         elif type(node) == NodeIdentifier:
             #print(node.name, self.current_scope.lookup(node.name))
             if self.current_scope.lookup(node.name):
@@ -240,19 +237,14 @@ class SemanticAnalyzer:
             else:
                 self.log(f"Take note, variable {node.name} was not declared before hand")
             return node.name
-            
+
         elif type(node) == NodeArrayCall:
             self.visit(node.index)
             var_token = self.current_scope.lookup(node.var)
             return self.visit(node.var)
-        
+
         ### If-Else Statement ###################################################################
-        elif type(node) == NodeBoolean:
-            self.visit(node.expr1)
-            if node.op != None and node.nodeBool != None:
-                self.visit(node.nodeBool) 
-                #compstr = str(val1)+" "+node.op.value+" "+str(val2)
-                
+
         elif type(node) == NodeIfElse:
             for index in range(0, len(node.booleans)):
                 self.visit(node.booleans[index])
@@ -269,13 +261,13 @@ class SemanticAnalyzer:
         elif type(node) == NodeWhileLoop:
             self.visit(node.boolean)
             self.visit(node.statement_list)
-        
+
         ### Procedures and Functions ###########################################
         elif type(node) == NodeFunctionCall:
             for index in range(len(node.arguments)):
                 factor = node.arguments[index]
                 self.visit(factor)
-        
+
         elif type(node) in [NodeProcedure, NodeFunction]:
             proc_name = self.visit(node.name) # Get value of identifier
             proc_symbol = ProcedureSymbol(proc_name)
@@ -320,18 +312,18 @@ class SemanticAnalyzer:
             self.log(procedure_scope)
             self.current_scope = self.current_scope.enclosing_scope
             self.log(f'LEAVE scope: {proc_name}')
-            
+
         elif type(node) == NodeReturnProFunc:
             if node.expr != None:
                 self.visit(node.expr)
-            
+
         ### Standard Library ######################################################
         elif type(node) == NodeInput:
             self.visit(node.var)
-            
+
         elif type(node) == NodeOutput:
             self.visit(node.expr)
         # Others
         else:
-            print("#######################OTHER NODE NOTICED#################")
+            print("####################### OTHER NODE NOTICED #################")
             print(type(node))

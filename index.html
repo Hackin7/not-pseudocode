@@ -24,9 +24,10 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarText">
         <ul class="navbar-nav mr-auto">
-        <!--
+
           <li class="nav-item active">
-            <a class="nav-link" href="/about.html">About</a></li>
+            <a class="nav-link" href="https://github.com/Hackin7/not-pseudocode">Github</a></li>
+        <!--
            <li><a class="nav-link" href="/achievements.html">Achievements</a></li>
             <li><a class="nav-link" href="/links.html">CTF Writeups</a></li>
         -->
@@ -38,9 +39,35 @@
     <br>
     <div  style="margin-left:auto;margin-right:auto;width:80%;">
         <p>Enter UK style Pseudocode, and it compiles to Python</p>
-          <textarea id='code' style="width:100%;">
-a <- 1
-OUTPUT a
+          <textarea id='code' style="width:100%;font-family: 'Courier New'">
+// Bubblesort Tech
+// Notice how it still works even with inconsistencies in the FOR loops and Assignment statements
+DECLARE a : ARRAY[3] OF INTEGER
+a[0] = 1
+a[1] = 0
+a[2] = -1
+a[3] = -2
+length = 3
+
+PROCEDURE BubbleSort(arr , length)
+	exchanges <- True
+	WHILE exchanges == True
+  	    exchanges <- False
+      	FOR i <- 0 TO length - 2
+          	IF arr[i] > arr[i+1] THEN
+                  	temp <- arr[i]
+                  	arr[i] <- arr[i+1]
+                  	arr[i+1] <- temp
+          	    exchanges <- True
+          	ENDIF
+  	    NEXT i
+	ENDWHILE
+ENDPROCEDURE
+
+CALL BubbleSort(a, length)
+FOR i <- 0 TO length - 1
+  OUTPUT a[i]
+ENDFOR
           </textarea><br>
         <button onclick='convertToPython()'>Compile to Python</button>
         <button onclick='runPseudocode()'>Run</button>
@@ -55,13 +82,13 @@ OUTPUT a
     </div>
 
     <!-- Python Script -->
-    <script src="code.js"></script>
+    <script src="newcode.js"></script>
     <script>
     const output = document.getElementById("output");
     const code = document.getElementById("code");
 
-    function addToOutput(s) {
-      output.value += '>>> ' + code.value + '\n' + s + '\n';
+    function addToOutput(cmd, s) {
+      output.value += '>>> ' + cmd + '\n' + s + '\n';
     }
 
     output.value = 'Initializing...\n';
@@ -77,7 +104,7 @@ OUTPUT a
                  output.value += s + '\n';}
          )
          .catch(
-             (err) => { addToOutput(err) }
+             (err) => { addToOutput("", err) }
          );
      }
     function loadDiyIo(){
@@ -98,21 +125,29 @@ OUTPUT a
             return value;
         }*/
      }
-    function evaluatePython() {
-      pyodide.runPythonAsync(code.value)
-        .then(output => addToOutput(output))
-        .catch((err) => { addToOutput(err) });
+    function evaluatePython(cmd) {
+      pyodide.runPythonAsync()
+        .then(output => addToOutput(cmd, output))
+        .catch((err) => { addToOutput(cmd, err) });
     }
     function convertToPython(){
         output.value = "";
-        let result = pyodide.globals.get('compile')(code.value);
-        output.value = result;
+        try{
+            let result = pyodide.globals.get('compile')(code.value);
+            output.value = result;
+        }catch (e){
+            output.value = e.message;
+        }
     }
 
     function runPseudocode(){
         output.value = "";
-        let result = pyodide.globals.get('runPseudocode')(code.value);
-        //output.value = result;
+        try{
+            let result = pyodide.globals.get('runPseudocode')(code.value);
+            output.value = result;
+        }catch (e){
+            output.value = e.message;
+        }
     }
 
 

@@ -1,9 +1,9 @@
 # haha copied from https://github.com/rspivak/lsbasi/blob/master/part19/spi.py
-from enum import Enum
-class ARType(Enum):
+
+class ARType():
     PROGRAM   = 'PROGRAM'
     PROCEDURE = 'PROCEDURE'
-    
+
 class CallStack:
     def __init__(self):
         self._records = []
@@ -31,7 +31,7 @@ class CallStack:
 
     def set(self, key, value):
         self.peek().set(key, value)
-        
+
     def __repr__(self):
         return self.__str__()
 
@@ -54,7 +54,7 @@ class ActivationRecord:
 
     def set(self, key, value):
         self.members[key] = value
-        
+
     def __str__(self):
         lines = [
             '{level}: {type} {name}'.format(

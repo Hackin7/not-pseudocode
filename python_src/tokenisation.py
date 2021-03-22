@@ -2,12 +2,14 @@
 # Data Types
 INTEGER = 'INTEGER'
 FLOAT = 'FLOAT'
+REAL = 'REAL'
 STRING = 'STRING'
 # Arithmetic
 ADD = 'ADD'
 SUB = 'SUB'
 MUL = ' MUL'
 DIV = 'DIV'
+MOD = 'MOD'
 # Comparison
 LT = "LT"
 LTE = "LTE"
@@ -15,6 +17,10 @@ EQUAL = "EQUAL"
 NOT_EQUAL = "NOT_EQUAL"
 GTE = "GTE"
 GT = "GT"
+
+OR = "OR"
+AND = "AND"
+NOT = "NOT"
 
 # Symbols
 LPAREN = '('
@@ -91,7 +97,6 @@ symbols = {
     '-': Token(SUB, '-'),
     '*': Token(MUL, '*'),
     '/': Token(DIV, '/'),
-    '<-': Token(ASSIGN, '<-'),
     # Comparison
     '<=': Token(LTE, '<='),
     '<': Token(LT, '<'),
@@ -101,6 +106,7 @@ symbols = {
     '>=': Token(GTE, '>='),
     '>': Token(GT, '>'),
     # Assignment
+    '<-': Token(ASSIGN, '<-'),
     '=': Token(ASSIGN, '='),
     # Symbols
     '(': Token(LPAREN, '('),
@@ -119,7 +125,7 @@ reserved_words = {
     "OF": Token(OF, "OF"),
     # If-Else
     "IF": Token(IF, 'IF'),
-    "THEN": Token(THEN, 'THEN'), 
+    "THEN": Token(THEN, 'THEN'),
     "ELSE": Token(ELSE, 'ELSE'),
     'ELSEIF' : Token(ELSEIF, 'ELSEIF'),
     "ENDIF": Token(ENDIF, "ENDIF"),
@@ -139,9 +145,18 @@ reserved_words = {
     "RETURN": Token(RETURN, "RETURN"),
     # Standard Library
     "INPUT": Token(INPUT, "INPUT"),
-    "OUTPUT": Token(OUTPUT, "OUTPUT"), 
-    'DIV': Token(DIV, '//'),
+    "OUTPUT": Token(OUTPUT, "OUTPUT"),
     "CALL": Token(CALL, "CALL"),
+    # Arithmetic
+    'DIV': Token(DIV, '//'),
+    'MOD': Token(MOD, '%'),
+    "OR": Token(OR, "or"),
+    "AND": Token(AND, "and"),
+    "NOT": Token(NOT, "not"),
+    "TRUE": Token(INTEGER, 1),
+    "FALSE": Token(INTEGER, 0),
+    "True": Token(INTEGER, 1),
+    "False": Token(INTEGER, 0),
 }
 
 def ordersort(lis):

@@ -10,9 +10,10 @@ class NodeData(Node):
 class NodeBinOp(Node):
     def __init__(self, token, left, right):
         super().__init__(token.value)
+        self.type = token.type
         self.left = left
         self.right = right
-        
+
 class NodeUnaryOp(Node):
     def __init__(self, token, right):
         super().__init__(token.value)
@@ -33,18 +34,13 @@ class NodeVariableDeclaration(Node):
         self.size1 = size1
         self.size2 = size2
         self.array_type = array_type
-    
+
 class NodeAssignment(Node):
     def __init__(self, identifier, expr):
         self.left = identifier
         self.right = expr
 
 # If-Else Statements
-class NodeBoolean(Node):
-    def __init__(self, expr1, op = None, nodeBool = None):
-        self.expr1 = expr1
-        self.op = op
-        self.nodeBool = nodeBool
 class NodeIfElse(Node):
     def __init__(self, booleans, statement_lists):
         self.booleans = booleans
@@ -76,7 +72,7 @@ class NodeOutput(Node):
 class NodeParams(Node):
     def __init__(self, paramslist):
         self.paramslist = paramslist
-        
+
 class NodeProcedure(Node):
     def __init__(self, name, params, statement_list):
         self.name = name

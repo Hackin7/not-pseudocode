@@ -9,21 +9,25 @@ Partially based on https://github.com/rspivak/lsbasi/blob/master/part19/spi.py
 empty : ""
 
 # Arithmetic
-variable: ID (LSQPAREN factor RSQPAREN) *
+arr_indexing : (LSQPAREN factor RSQPAREN) *
+variable: ID arr_indexing
 factor : PLUS factor
         | MINUS factor
-        | INTEGER 
+        | NOT factor
+        | INTEGER
         | FLOAT
         | STRING
         | LPAREN expr RPAREN
-        | variable
-        | factor(LPAREN (factor). (COMMA factor) * RPAREN)*
-term : factor ((MUL | DIV | MOD | FLOOR) factor)*
-expr : term ((PLUS | MINUS) term )* 
+        | ID (arr_indexing | LPAREN (expr (COMMA expr)* )? )*
+
+term : factor ((MUL | DIV | MOD | OR| AND) factor)*
+math_expr : term ((PLUS | MINUS) term )*
+boolean : expr (COMPARE expr)*
+expr : comb_boolean ((OR|AND) comb_boolean)*
 
 # Program
 statement_list : statement*
-statement : assignment_statement 
+statement : assignment_statement
             | if_statement
             | for_loop
             | while_loop
@@ -34,8 +38,9 @@ statement : assignment_statement
             | return_profunc
 
 # Declarations and Assignments
+arr_size : expr (:expr)?
 var_declaration: DECLARE identifier COLON TYPE
-               | DECLARE identifier COLON ARRAY[INT:INT] OF TYPE
+               | DECLARE identifier COLON ARRAY[arr_size(,arr_size)?] OF TYPE
 
 ASSIGN : "<-" | "="
 assignment_statement: variable ASSIGN expr
@@ -43,13 +48,13 @@ assignment_statement: variable ASSIGN expr
 # If-Else Statements
 boolean : expr (COMPARE boolean)*
 
-if_statement : "IF" boolean ("THEN"|NEWLINE)
+if_statement : "IF" expr ("THEN"|NEWLINE)
                     statement_list
                 ("ELSE IF" boolean ("THEN"|NEWLINE) statement_list)
                 ("ELSE" statement_list)
                 "ENDIF"
 
-# Loops 
+# Loops
 for_loop :  "FOR" ID ASSIGN expr "TO" expr ("STEP" expr). ("DO"|NEWLINE)
                 statement_list
             ("ENDFOR"|"NEXT" ID)
@@ -71,7 +76,7 @@ call_procedure: "CALL" ID
 
 # Standard Library
 input : "INPUT" variable
-output : "OUTPUT" expr
+output : "OUTPUT" expr (, expr)+
 
 
 ```
@@ -93,7 +98,7 @@ This method is responsible for breaking a sentence apart into tokens. One token 
  + `_id()`
 
 `Parser`
-Responsible for interpreting the code accoriding to the grammar rules (and returning syntax errors)
+Responsible for interpreting the code according to the grammar rules (and returning syntax errors)
 + `__init__()`
 + `error()`
 + all the terminals

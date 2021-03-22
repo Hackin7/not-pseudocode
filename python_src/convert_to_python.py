@@ -42,18 +42,13 @@ class ToPythonInterpreter:
         elif type(node) == NodeVariableDeclaration:
             if node.given_type.name == "ARRAY":
                 if node.size2 != None:
-                    return f'{self.visit(node.identifier)} = [ [ None for j in range({self.visit(node.size2)}) ] for i in range({self.visit(node.size1)}) ]'
+                    return f'{self.visit(node.identifier)} = [ [ None for j in range({self.visit(node.size2)} + 1) ] for i in range({self.visit(node.size1)} + 1) ]'
                 else:
-                    return f'{self.visit(node.identifier)} = [ None for i in range({self.visit(node.size1)}) ]'
+                    return f'{self.visit(node.identifier)} = [ None for i in range({self.visit(node.size1)} + 1) ]'
             return f'{self.visit(node.identifier)} = None'
         elif type(node) == NodeAssignment:
             return f'{self.visit(node.left)} = {self.visit(node.right)}'
         # If-Else Statement
-        elif type(node) == NodeBoolean:
-            result = f'{self.visit(node.expr1)}'
-            if node.op != None and node.nodeBool != None:
-                result += f' {node.op.value} {self.visit(node.nodeBool)}'
-            return result
         elif type(node) == NodeIfElse:
             result = ''
             result += f'if {self.visit(node.booleans[0])}:\n'
@@ -61,7 +56,7 @@ class ToPythonInterpreter:
 
             for index in range(1, len(node.booleans)):
                 result += f'elif {self.visit(node.booleans[index])}:\n'
-                #result += ToPythonInterpreter.indentText(self.visit(node.statement_lists[index])) + '\n'
+                result += ToPythonInterpreter.indentText(self.visit(node.statement_lists[index])) + '\n'
             if len(node.booleans) < len(node.statement_lists):
                  result += f'else:\n'
                  result += ToPythonInterpreter.indentText(self.visit(node.statement_lists[-1])) + '\n'
@@ -105,3 +100,4 @@ class ToPythonInterpreter:
             return f'{node.name}'
         else:
             print(type(node))
+            #return 'pass'
