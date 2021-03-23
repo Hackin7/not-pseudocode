@@ -144,7 +144,8 @@ ENDFOR
         output.value = "";
         try{
             let result = pyodide.globals.get('runPseudocode')(code.value);
-            output.value = result;
+            //output.value = result;
+            //return result;
         }catch (e){
             output.value = "ERROR!!!\n"+e.message;
         }

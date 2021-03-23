@@ -107,7 +107,7 @@ OUTPUT hellofunc(1, 2, 3)
 
 '''
 
-text1 = """
+text = """
 // Bubblesort Tech
 // Notice how it still works even with inconsistencies in the FOR loops and Assignment statements
 DECLARE a : ARRAY[3] OF INTEGER
